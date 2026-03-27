@@ -63,6 +63,10 @@ function FlightTracker:ADDON_LOADED()
     if not FlightTrackerDB.flights then FlightTrackerDB.flights = {} end
     if not FlightTrackerDB.routes then FlightTrackerDB.routes = {} end
     if not FlightTrackerDB.checklistExpanded then FlightTrackerDB.checklistExpanded = {} end
+
+    if not FlightTrackerDB.estimatedCache then 
+        FlightTrackerDB.estimatedCache = {} 
+    end
     
     if not FlightTrackerDB.char then FlightTrackerDB.char = {} end
     if not FlightTrackerDB.char[playerName] then FlightTrackerDB.char[playerName] = {} end
@@ -155,6 +159,12 @@ function FlightTracker:ScanRoutes()
             local current = FlightTrackerDB.routes[currentNode][nodeName]
             if not current or current == true then
                 FlightTrackerDB.routes[currentNode][nodeName] = faction
+
+                if not FlightTrackerDB.routes[nodeName] then
+                    FlightTrackerDB.routes[nodeName] = {}
+                end
+                FlightTrackerDB.routes[nodeName][currentNode] = faction
+
             elseif current ~= faction and current ~= "Both" then
                 FlightTrackerDB.routes[currentNode][nodeName] = "Both"
             end
@@ -164,6 +174,59 @@ function FlightTracker:ScanRoutes()
     if FlightTracker.Checklist and FlightTracker.Checklist:IsOpen() then
         FlightTracker.Checklist:Refresh()
     end
+end
+
+
+function FlightTracker:GetEstimatedFlightTime(origin, destination)
+    if not origin or not destination or origin == destination then
+        return origin == destination and 0 or nil
+    end
+
+    local cacheKey = origin .. "|" .. destination
+    if FlightTrackerDB.estimatedCache and FlightTrackerDB.estimatedCache[cacheKey] ~= nil then
+        return FlightTrackerDB.estimatedCache[cacheKey] or nil
+    end
+
+    local visited = {}
+    local queue = { { node = origin, time = 0 } }
+
+    while table.getn(queue) > 0 do
+        local current = table.remove(queue, 1)
+
+        if current.node == destination then
+            if FlightTrackerDB.estimatedCache then
+                FlightTrackerDB.estimatedCache[cacheKey] = current.time
+            end
+            return current.time
+        end
+
+        if not visited[current.node] then
+            visited[current.node] = true
+
+            local routes = FlightTrackerDB.routes[current.node]
+            if routes then
+                for nextNode in pairs(routes) do
+                    if not visited[nextNode] then
+                        local key = current.node .. " -> " .. nextNode
+                        local reverseKey = nextNode .. " -> " .. current.node
+                        local duration = FlightTrackerDB.flights[key] or FlightTrackerDB.flights[reverseKey]
+
+                        if duration then
+                            table.insert(queue, {
+                                node = nextNode,
+                                time = current.time + duration
+                            })
+                        end
+                    end
+                end
+            end
+        end
+    end
+
+    if FlightTrackerDB.estimatedCache then
+        FlightTrackerDB.estimatedCache[cacheKey] = false
+    end
+    return nil
 end
 
 function FlightTracker:HookTaxiMap()
@@ -203,6 +266,17 @@ function FlightTracker:HookTaxiMap()
             
                 local key = origin .. " -> " .. destName
                 local duration = FlightTrackerDB.flights[key]
+
+                -- Try reverse route
+                if not duration then
+                    local reverseKey = destName .. " -> " .. origin
+                    duration = FlightTrackerDB.flights[reverseKey]
+                end
+
+                -- Try calculated multi-hop route
+                if not duration then
+                    duration = FlightTracker:GetEstimatedFlightTime(origin, destName)
+                end
             
                 local timeText = "--:--"
                 if duration then
@@ -277,6 +351,17 @@ function FlightTracker:StartFlight(destination, cost)
 
     local key = originNode .. " -> " .. destNode
     local knownDuration = FlightTrackerDB.flights[key]
+
+    -- Try reverse
+    if not knownDuration then
+        local reverseKey = destNode .. " -> " .. originNode
+        knownDuration = FlightTrackerDB.flights[reverseKey]
+    end
+
+    -- Try estimated multi-hop route (your function)
+    if not knownDuration then
+        knownDuration = FlightTracker:GetEstimatedFlightTime(originNode, destNode)
+    end
     
     if FlightTrackerDB.settings.announceFlight then
         local msg = "Flying to " .. destNode .. "."
@@ -319,11 +404,21 @@ function FlightTracker:EndFlight()
     
     if originNode and destNode and duration > 10 then
         local key = originNode .. " -> " .. destNode
-        
-        -- Save flight duration GLOBALLY (keep shortest recorded time)
-        local existing = FlightTrackerDB.flights[key]
+            local reverseKey = destNode .. " -> " .. originNode
+
+            local existing = FlightTrackerDB.flights[key]
         if not existing or duration < existing then
             FlightTrackerDB.flights[key] = duration
+        end
+
+            local reverseExisting = FlightTrackerDB.flights[reverseKey]
+        if not reverseExisting or duration < reverseExisting then
+            FlightTrackerDB.flights[reverseKey] = duration
+        end
+
+        -- Clear cache so new times improve estimates
+        if (not existing or duration < existing) or (not reverseExisting or duration < reverseExisting) then
+            FlightTrackerDB.estimatedCache = {}
         end
         
         -- Save statistics LOCALLY (Per Character)
