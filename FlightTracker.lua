@@ -82,6 +82,13 @@ function FlightTracker:ADDON_LOADED()
 
     self.charStats = FlightTrackerDB.char[playerName].stats
 
+    -- NEW: Just restore the raw lastFlightMaster for now
+    if FlightTrackerDB.lastFlightMaster then
+        FlightTracker.currentFlightMaster = FlightTrackerDB.lastFlightMaster
+    else
+        FlightTracker.currentFlightMaster = nil
+    end
+
     local defaultSettings = {
         showTimer = true,
         autoDismount = true,
@@ -126,19 +133,48 @@ function FlightTracker:PLAYER_ENTERING_WORLD()
         isFlying = false
         isPending = false
         flightTimerFrame:Hide()
+        
+        -- NEW: Convert zone name to actual flight master name
+        local currentZone = GetZoneText()
+        --self:Print("DEBUG: Current zone = " .. tostring(currentZone))
+        --self:Print("DEBUG: currentFlightMaster before = " .. tostring(FlightTracker.currentFlightMaster))
+        
+        -- If currentFlightMaster is just a zone name, convert it to a real flight master
+        if FlightTracker.currentFlightMaster then
+            -- Check if it's already a valid flight master name
+            if not (FlightTrackerDB.routes and FlightTrackerDB.routes[FlightTracker.currentFlightMaster]) then
+                -- It's not a valid flight master, try to find one in current zone
+                local foundMaster = FlightTracker:FindFlightMasterInZone(currentZone)
+                if foundMaster then
+                    FlightTracker.currentFlightMaster = foundMaster
+                    FlightTrackerDB.lastFlightMaster = foundMaster
+                end
+            end
+        else
+            -- No currentFlightMaster set, find one in current zone
+            local foundMaster = FlightTracker:FindFlightMasterInZone(currentZone)
+            if foundMaster then
+                FlightTracker.currentFlightMaster = foundMaster
+                FlightTrackerDB.lastFlightMaster = foundMaster
+            end
+        end
+        
+        --self:Print("DEBUG: currentFlightMaster after = " .. tostring(FlightTracker.currentFlightMaster))
     end
 end
 
 function FlightTracker:TAXIMAP_OPENED()
     cachedOriginNode = FlightTracker.Util.GetCurrentFlightNode()
-
     self:ScanRoutes()
-
     if FlightTrackerDB.settings.autoDismount then
         self:DismountPlayer()
     end
-
     self:HookTaxiMap()
+
+    -- NEW: Register flight master location
+    if FlightTracker.MapIcons then
+        FlightTracker.MapIcons:RegisterCurrentFlightMaster()
+    end
 end
 
 function FlightTracker:ScanRoutes()
@@ -443,10 +479,38 @@ function FlightTracker:EndFlight()
         end
     end
     
+    -- NEW: Update current flight master to the destination we just landed at
+    FlightTracker.currentFlightMaster = destNode
+    FlightTrackerDB.lastFlightMaster = destNode
+    
     startTime = 0
     originNode = nil
     destNode = nil
     self:StopMonitor()
+end
+
+function FlightTracker:FindFlightMasterInZone(zoneName)
+    -- Search through known flight masters database (from mapicons)
+    if FlightTrackerDB.flightMasters then
+        for flightMasterName, data in pairs(FlightTrackerDB.flightMasters) do
+            if data.zone == zoneName then
+                return flightMasterName
+            end
+        end
+    end
+    
+    -- Search through known routes to find a flight master location in this zone
+    if FlightTrackerDB.routes then
+        for flightMasterName in pairs(FlightTrackerDB.routes) do
+            -- Check if the flight master name contains the zone name
+            -- e.g., "Stormwind, Elwynn Forest" contains "Elwynn Forest"
+            if string.find(flightMasterName, zoneName, 1, true) then
+                return flightMasterName
+            end
+        end
+    end
+    
+    return nil
 end
 
 function FlightTracker:DismountPlayer()
