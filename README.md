@@ -41,6 +41,14 @@ Records flight times and costs and provides detailed flight statistics.
 ---
 
 ## 🚀 Changelog
+<details>
+<summary><strong>v1.5.0</strong> – Map icons, lines and timers</summary>
+
+* Added icon drawing on zone, continent level
+* Added timers when hovering over a desired location
+* Added flight lines - I am still working on refining these
+
+</details>
 
 <details>
 <summary><strong>v1.4.0</strong> – Major Update</summary>
