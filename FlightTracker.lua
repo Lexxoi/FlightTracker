@@ -212,6 +212,21 @@ function FlightTracker:ScanRoutes()
     end
 end
 
+-- Register the event at the top with the others
+FlightTracker:RegisterEvent("ZONE_CHANGED_NEW_AREA")
+
+-- Then add the handler
+function FlightTracker:ZONE_CHANGED_NEW_AREA()
+    if UnitOnTaxi("player") then return end  -- ignore zone changes mid-flight
+
+    local newZone = GetZoneText()
+    local found = FlightTracker:FindFlightMasterInZone(newZone)
+    if found then
+        FlightTracker.currentFlightMaster = found
+        FlightTrackerDB.lastFlightMaster = found
+    end
+    -- if not found, we leave currentFlightMaster as-is from wherever you were
+end
 
 function FlightTracker:GetEstimatedFlightTime(origin, destination)
     if not origin or not destination or origin == destination then
