@@ -1,0 +1,188 @@
+<?xml-stylesheet type="text/xsl" href="/css/wowui.xsl"?>
+<Ui xmlns="http://www.blizzard.com/wow/ui/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+
+  <Script file="mapicons.lua"/>
+
+  <!-- Flight master icon template -->
+  <Button name="FTMapIconTemplate" hidden="true" virtual="true">
+    <Size><AbsDimension x="16" y="16"/></Size>
+    <NormalTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Green"/>
+    <HighlightTexture file="Interface\TaxiFrame\UI-Taxi-Icon-Highlight">
+      <Size x="32" y="32"/>
+      <Anchors>
+        <Anchor point="CENTER">
+          <Offset><AbsDimension x="0" y="0"/></Offset>
+        </Anchor>
+      </Anchors>
+    </HighlightTexture>
+    <Scripts>
+      <OnEnter>FlightTracker_MapIcon_OnEnter(this);</OnEnter>
+      <OnLeave>FlightTracker_MapIcon_OnLeave(this);</OnLeave>
+    </Scripts>
+  </Button>
+
+  <!-- Flight line texture template -->
+  <Texture name="FTMapLineTemplate" hidden="true" virtual="true"
+           file="Interface\AddOns\FlightTracker\img\lineup">
+    <Size><AbsDimension x="256" y="256"/></Size>
+    <Anchors><Anchor point="TOPLEFT"/></Anchors>
+  </Texture>
+
+  <!-- Container frame parented to WorldMapDetailFrame.
+       All icons and lines live here so they move with the map. -->
+  <Frame name="FTMapFrame" parent="WorldMapDetailFrame" hidden="false">
+    <Layers>
+      <Layer level="ARTWORK">
+        <Texture name="FTMapLine1"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine2"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine3"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine4"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine5"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine6"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine7"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine8"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine9"  inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine10" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine11" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine12" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine13" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine14" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine15" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine16" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine17" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine18" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine19" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine20" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine21" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine22" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine23" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine24" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine25" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine26" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine27" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine28" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine29" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine30" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine31" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine32" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine33" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine34" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine35" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine36" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine37" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine38" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine39" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine40" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine41" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine42" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine43" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine44" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine45" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine46" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine47" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine48" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine49" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine50" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine51" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine52" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine53" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine54" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine55" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine56" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine57" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine58" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine59" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine60" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine61" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine62" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine63" inherits="FTMapLineTemplate"/>
+        <Texture name="FTMapLine64" inherits="FTMapLineTemplate"/>
+      </Layer>
+    </Layers>
+    <Frames>
+      <Button name="FTMapIcon1"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon2"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon3"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon4"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon5"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon6"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon7"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon8"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon9"  inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon10" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon11" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon12" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon13" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon14" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon15" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon16" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon17" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon18" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon19" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon20" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon21" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon22" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon23" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon24" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon25" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon26" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon27" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon28" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon29" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon30" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon31" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon32" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon33" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon34" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon35" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon36" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon37" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon38" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon39" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon40" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon41" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon42" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon43" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon44" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon45" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon46" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon47" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon48" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon49" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon50" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon51" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon52" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon53" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon54" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon55" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon56" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon57" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon58" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon59" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon60" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon61" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon62" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon63" inherits="FTMapIconTemplate"/>
+      <Button name="FTMapIcon64" inherits="FTMapIconTemplate"/>
+    </Frames>
+  </Frame>
+
+<Frame name="FTMapIconInitFrame" parent="UIParent" hidden="true">
+    <Scripts>
+      <OnLoad>
+        -- Defer initialization until addon is fully loaded
+        local f = CreateFrame("Frame")
+        f:RegisterEvent("ADDON_LOADED")
+        f:SetScript("OnEvent", function()
+          if arg1 == "FlightTracker" then
+            FlightTracker_MapIcons_OnLoad()
+            f:UnregisterEvent("ADDON_LOADED")
+          end
+        end)
+      </OnLoad>
+    </Scripts>
+  </Frame>
+
+</Ui>
