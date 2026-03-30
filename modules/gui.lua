@@ -283,6 +283,19 @@ function GUI:CreateDropdown()
         UIDropDownMenu_AddButton(info)
 
         info = {}
+        info.text = "Show Flight Masters on Map"
+        info.checked = FlightTrackerDB.settings.showMapIcons ~= false
+        info.keepShownOnClick = 1
+        info.func = function()
+            FlightTrackerDB.settings.showMapIcons =
+                not FlightTrackerDB.settings.showMapIcons
+            if FlightTracker.MapIcons and FlightTracker.MapIcons.Refresh then
+                FlightTracker.MapIcons.Refresh()
+            end
+        end
+        UIDropDownMenu_AddButton(info)
+
+        info = {}
         info.text = ""
         info.notCheckable = true
         UIDropDownMenu_AddButton(info)
