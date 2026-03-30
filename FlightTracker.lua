@@ -130,9 +130,18 @@ function FlightTracker:PLAYER_ENTERING_WORLD()
         flightTimerFrame:Show()
         self:StartMonitor()
     else
-        isFlying = false
-        isPending = false
-        flightTimerFrame:Hide()
+         -- If we were flying but got ported (summon, BG, etc.) discard the flight
+        if isFlying or isPending then
+            isFlying = false
+            isPending = false
+            startTime = 0
+            originNode = nil
+            destNode = nil
+            pendingDestName = nil
+            flightTimerFrame:Hide()
+            self:StopMonitor()
+            --self:Print("Flight interrupted — time not recorded.")
+        end
         
         -- NEW: Convert zone name to actual flight master name
         local currentZone = GetZoneText()
@@ -456,21 +465,19 @@ function FlightTracker:EndFlight()
     if originNode and destNode and duration > 10 then
         local key = originNode .. " -> " .. destNode
             local reverseKey = destNode .. " -> " .. originNode
-
             local existing = FlightTrackerDB.flights[key]
-        if not existing or duration < existing then
-            FlightTrackerDB.flights[key] = duration
-        end
-
             local reverseExisting = FlightTrackerDB.flights[reverseKey]
-        if not reverseExisting or duration < reverseExisting then
-            FlightTrackerDB.flights[reverseKey] = duration
-        end
 
-        -- Clear cache so new times improve estimates
-        if (not existing or duration < existing) or (not reverseExisting or duration < reverseExisting) then
-            FlightTrackerDB.estimatedCache = {}
-        end
+            if not existing or math.abs(duration - existing) > 1 then
+                FlightTrackerDB.flights[key] = duration
+            end
+            if not reverseExisting or math.abs(duration - reverseExisting) > 1 then
+                FlightTrackerDB.flights[reverseKey] = duration
+            end
+            -- Clear cache so new times improve estimates
+            if (not existing or math.abs(duration - existing) > 1) or (not reverseExisting or math.abs(duration - reverseExisting) > 1) then
+                FlightTrackerDB.estimatedCache = {}
+            end
         
         -- Save statistics LOCALLY (Per Character)
         if self.charStats then
@@ -486,7 +493,7 @@ function FlightTracker:EndFlight()
             end
         end
         
-        self:Print("Landed at " .. destNode .. ". Time: " .. self.Util.FormatTime(duration))
+        --self:Print("Landed at " .. destNode .. ". Time: " .. self.Util.FormatTime(duration))
 
         if FlightTracker.GUI then FlightTracker.GUI:UpdateStats() end
         if FlightTracker.Checklist and FlightTracker.Checklist:IsOpen() then
