@@ -2,7 +2,7 @@
 ## Title: |cffffcc00Flight|cffffffffTracker
 ## Notes: Tracks flight path times and flying-related statistics
 ## Author: tilr, lexxoi
-## Version: 1.4
+## Version: 1.5
 ## SavedVariables: FlightTrackerDB
 
 FlightTracker.lua
@@ -11,3 +11,4 @@ api\utility.lua
 modules\routes.lua
 modules\gui.lua
 modules\checklist.lua
+modules\mapicons.xml
