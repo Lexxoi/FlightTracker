@@ -197,12 +197,18 @@ function FlightTracker_MapIcon_OnEnter(button)
                 duration = FlightTrackerDB.flights[reverseKey]
             end
 
+            local isEstimated = false
             if not duration then
                 duration = FlightTracker:GetEstimatedFlightTime(origin, button.nodeName)
+                if duration then isEstimated = true end
             end
 
             if duration then
-                GameTooltip:AddLine("Flight time: " .. FlightTracker.Util.FormatTime(duration), 1, 1, 1)
+                if isEstimated then
+                    GameTooltip:AddLine("Estimated: " .. FlightTracker.Util.FormatTime(duration), 0.4, 0.8, 1)
+                else
+                    GameTooltip:AddLine("Flight time: " .. FlightTracker.Util.FormatTime(duration), 1, 1, 1)
+                end
             else
                 GameTooltip:AddLine("No flight time recorded yet", 0.5, 0.5, 0.5)
             end
