@@ -224,58 +224,67 @@ end
 -- Register the event at the top with the others
 FlightTracker:RegisterEvent("ZONE_CHANGED_NEW_AREA")
 
--- Then add the handler
 function FlightTracker:ZONE_CHANGED_NEW_AREA()
-    if UnitOnTaxi("player") then return end  -- ignore zone changes mid-flight
+    if UnitOnTaxi("player") then return end
 
     local newZone = GetZoneText()
     local found = FlightTracker:FindFlightMasterInZone(newZone)
     if found then
         FlightTracker.currentFlightMaster = found
         FlightTrackerDB.lastFlightMaster = found
+        -- Clear cached estimates since our origin changed
+        FlightTrackerDB.estimatedCache = {}
     end
-    -- if not found, we leave currentFlightMaster as-is from wherever you were
 end
 
 function FlightTracker:GetEstimatedFlightTime(origin, destination)
-    if not origin or not destination or origin == destination then
-        return origin == destination and 0 or nil
-    end
+    if not origin or not destination then return nil end
+    if origin == destination then return 0 end
 
     local cacheKey = origin .. "|" .. destination
     if FlightTrackerDB.estimatedCache and FlightTrackerDB.estimatedCache[cacheKey] ~= nil then
         return FlightTrackerDB.estimatedCache[cacheKey] or nil
     end
 
+    -- Dijkstra: always expand the lowest-cost node first
+    local dist = {}
     local visited = {}
-    local queue = { { node = origin, time = 0 } }
+    dist[origin] = 0
 
-    while table.getn(queue) > 0 do
-        local current = table.remove(queue, 1)
-
-        if current.node == destination then
-            if FlightTrackerDB.estimatedCache then
-                FlightTrackerDB.estimatedCache[cacheKey] = current.time
+    while true do
+        -- Find unvisited node with lowest cost
+        local current, currentDist = nil, nil
+        for node, d in pairs(dist) do
+            if not visited[node] then
+                if currentDist == nil or d < currentDist then
+                    current = node
+                    currentDist = d
+                end
             end
-            return current.time
         end
 
-        if not visited[current.node] then
-            visited[current.node] = true
+        if not current then break end
+        if current == destination then
+            if FlightTrackerDB.estimatedCache then
+                FlightTrackerDB.estimatedCache[cacheKey] = currentDist
+            end
+            return currentDist
+        end
 
-            local routes = FlightTrackerDB.routes[current.node]
-            if routes then
-                for nextNode in pairs(routes) do
-                    if not visited[nextNode] then
-                        local key = current.node .. " -> " .. nextNode
-                        local reverseKey = nextNode .. " -> " .. current.node
-                        local duration = FlightTrackerDB.flights[key] or FlightTrackerDB.flights[reverseKey]
+        visited[current] = true
 
-                        if duration then
-                            table.insert(queue, {
-                                node = nextNode,
-                                time = current.time + duration
-                            })
+        local routes = FlightTrackerDB.routes[current]
+        if routes then
+            for nextNode in pairs(routes) do
+                if not visited[nextNode] then
+                    local key = current .. " -> " .. nextNode
+                    local reverseKey = nextNode .. " -> " .. current
+                    local duration = FlightTrackerDB.flights[key] or FlightTrackerDB.flights[reverseKey]
+
+                    if duration then
+                        local newDist = currentDist + duration
+                        if dist[nextNode] == nil or newDist < dist[nextNode] then
+                            dist[nextNode] = newDist
                         end
                     end
                 end
@@ -474,10 +483,17 @@ function FlightTracker:EndFlight()
             if not reverseExisting or math.abs(duration - reverseExisting) > 1 then
                 FlightTrackerDB.flights[reverseKey] = duration
             end
-            -- Clear cache so new times improve estimates
+            -- clear the cache
             if (not existing or math.abs(duration - existing) > 1) or (not reverseExisting or math.abs(duration - reverseExisting) > 1) then
                 FlightTrackerDB.estimatedCache = {}
-            end
+            else
+                -- Always invalidate estimated routes involving this destination
+                for key in pairs(FlightTrackerDB.estimatedCache) do
+                    if string.find(key, originNode, 1, true) or string.find(key, destNode, 1, true) then
+                        FlightTrackerDB.estimatedCache[key] = nil
+                    end
+                end
+end
         
         -- Save statistics LOCALLY (Per Character)
         if self.charStats then
