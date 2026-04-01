@@ -211,7 +211,6 @@ function FlightTracker_MapIcon_OnEnter(button)
                 end
             else
                 GameTooltip:AddLine("No flight time recorded yet", 0.5, 0.5, 0.5)
-            end
         end
 
         -- Draw only true direct lines (gryphon-master style)
