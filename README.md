@@ -1,6 +1,6 @@
 ## ✈️ FlightTracker
 
-Records flight times and costs and provides detailed flight statistics.
+Records flight times and costs and provides detailed flight statistics for Vanilla 1.12.1
 
 ---
 
